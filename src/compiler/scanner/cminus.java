@@ -29,7 +29,7 @@ import java.util.*;
  * 
  */
 
-public class cminus implements scanner { // Changed class name and added implements clause
+public class cminus implements scanner {
 
     private static final int MAXTOKENLEN = 40;
 
@@ -59,7 +59,7 @@ public class cminus implements scanner { // Changed class name and added impleme
     }
 
     // Scanner Constructor - opens the input file
-    public cminus(String inputFile) throws FileNotFoundException { // Changed constructor name to cminus
+    public cminus(String inputFile) throws FileNotFoundException {
         reader = new BufferedReader(new FileReader(inputFile));
         currentLine = "";
         linePos = 0;
