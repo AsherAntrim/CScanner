@@ -1,0 +1,32 @@
+/* error.cm */
+/* Error Test Cases for C- Scanner */
+
+void main(void) {
+    /* Test invalid numbers with leading zeros */
+    int x;
+    x = 042;
+    
+    /* Test invalid identifiers */
+    int 1var;
+    int @var;
+    
+    /* Test invalid operators */
+    x = 5 ** 2;
+    x =& 5;
+    
+    /* Test invalid characters */
+    x = #5;
+    x = $5;
+    
+    /* Test missing semicolons */
+    x = 5 
+    
+    /* Test invalid array declarations */
+    int arr[-1];
+    int arr[0];
+    
+    /* Test invalid escape sequences */
+    x = "\n";
+    
+    return
+}

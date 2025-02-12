@@ -1,3 +1,6 @@
+/* test1.cm */
+/* Tests basic token types */
+
 void main(void) {
     int x;
     int y;

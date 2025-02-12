@@ -1,19 +1,34 @@
 package compiler.scanner;
 
-// Represents a token in the source file
-// Mainly used to help format the output output files so they looks nice lol
-// Do not know if this is needed as he said in the main project requirements that is needs to be able to be read from easily for the next project
+/**
+ * Represents a single token identified during lexical analysis of C- source
+ * code. Each token contains its type classification, the value, and line
+ * number.
+ *
+ * @author Asher Antrim & Ethan Emery
+ * @version 1.0
+ *          File: Token.java
+ *          Created: 31-Jan-2025
+ *          ©Copyright Cedarville University, its Computer Science faculty, and
+ *          the authors. All rights reserved.
+ *
+ *          Description: This class describes individual tokens found during the
+ *          scanning process. Each token stores its classification, the value
+ *          found in the source code, and its line number. The class provides
+ *          access to these properties through getter methods and includes a
+ *          toString method for debugging and display purposes.
+ */
 
 public class Token {
     private TokenType type;
-    private String lexeme;
+    private String value;
     private int lineNo;
 
-    public Token(TokenType type, String lexeme, int lineNo) {
+    public Token(TokenType type, String value, int lineNo) {
         // Type of the token from the TokenType enum
         this.type = type;
         // String value of the token
-        this.lexeme = lexeme;
+        this.value = value;
         // Line number where the token was found
         this.lineNo = lineNo;
     }
@@ -22,8 +37,8 @@ public class Token {
         return type;
     }
 
-    public String getLexeme() {
-        return lexeme;
+    public String getValue() {
+        return value;
     }
 
     public int getLineNo() {
@@ -33,7 +48,7 @@ public class Token {
     // Puts the token into a string representation of the token
     @Override
     public String toString() {
-        return String.format("Line %d: Type: %s, Lexeme: \"%s\"",
-                lineNo, type, lexeme);
+        return String.format("Line %d: Type: %s, Value: \"%s\"",
+                lineNo, type, value);
     }
 }

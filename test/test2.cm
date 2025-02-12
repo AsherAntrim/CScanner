@@ -1,5 +1,5 @@
-/* test2.c - QuickSort Implementation */
-/* Tests real-world usage */
+/* test2.cm */
+/* tests quicksort */
 
 int partition(int arr[], int low, int high) {
     int pivot;
