@@ -456,7 +456,7 @@ public class CMinusParser implements Parser {
     private ExpressionNode simpleExpression(int lineNum, ExpressionNode leftExpr) throws IOException {
         // If we have a leftExpr passed in, it's from an ID that we've already processed
         ExpressionNode left = (leftExpr != null) ? leftExpr : additiveExpression();
-
+    
         // Check if there's a relational operator
         RelOpType operator = null;
         switch (currentToken.getType()) {
@@ -481,31 +481,25 @@ public class CMinusParser implements Parser {
             default:
                 return left; // No relational operator, just return the additive expression
         }
-
+    
         advance(); // Skip the relational operator
         ExpressionNode right = additiveExpression();
-
+    
         return new SimpleExpressionNode(lineNum, left, operator, right);
     }
 
     // additive-expression → term {addop term}
     private ExpressionNode additiveExpression() throws IOException {
-        System.out.println("DEBUG: Entering additiveExpression");
         int lineNum = currentToken.getLineNo();
         ExpressionNode left = term();
 
-        // Keep processing as long as we see + or - operators
-        while (currentToken.getType() == TokenType.PLUS ||
-                currentToken.getType() == TokenType.MINUS) {
-            AddOpType operator = (currentToken.getType() == TokenType.PLUS) ? AddOpType.PLUS : AddOpType.MINUS;
-            advance(); // Skip the operator
-
-            // Get the right operand (another term)
+        while (currentToken.getType() == TokenType.PLUS || 
+            currentToken.getType() == TokenType.MINUS) {
+            AddOpType operator = (currentToken.getType() == TokenType.PLUS) ? 
+                                AddOpType.PLUS : AddOpType.MINUS;
+            advance();
             ExpressionNode right = term();
-
-            // Create a new AddExpressionNode with the left and right operands
-            left = new AddExpressionNode(lineNum, left, operator, right);
-            System.out.println("DEBUG: additiveExpression processed term: " + left);
+            left = new SimpleExpressionNode(lineNum, left, operator, right);
         }
 
         return left;
