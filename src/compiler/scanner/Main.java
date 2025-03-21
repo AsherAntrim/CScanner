@@ -31,8 +31,11 @@ public class Main {
         }
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(args[1]))) {
-            cminus scanner = new cminus(args[0]);
+            scanner scanner = new cminus(args[0]);
             Token token;
+
+            // cminus scanner = new cminus(args[0]);
+            // Token token;
 
             writer.println("TOKEN LISTING FOR FILE: " + args[0]);
             writer.println("Line\tType\t\tValue");

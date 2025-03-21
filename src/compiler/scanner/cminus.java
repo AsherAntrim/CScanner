@@ -40,14 +40,13 @@ public class cminus implements scanner {
     private boolean EOF_flag;
     private String tokenString;
 
-    // States of the DFA
     private enum State {
         START, INLT, INGT, INEQ, INNOT, INSLASH,
         INCOMMENT, INCOMMENTSTAR, INNUM, INID, DONE
     }
 
-    // Reserved words
     private static final Map<String, TokenType> reservedWords;
+
     static {
         reservedWords = new HashMap<>();
         reservedWords.put("else", TokenType.ELSE);
@@ -58,7 +57,6 @@ public class cminus implements scanner {
         reservedWords.put("while", TokenType.WHILE);
     }
 
-    // Scanner Constructor - opens the input file
     public cminus(String inputFile) throws FileNotFoundException {
         reader = new BufferedReader(new FileReader(inputFile));
         currentLine = "";
@@ -68,7 +66,6 @@ public class cminus implements scanner {
         tokenString = "";
     }
 
-    // Gets the next char in the input file
     private int getNextChar() throws IOException {
         if (linePos >= currentLine.length()) {
             lineNo++;
@@ -85,18 +82,12 @@ public class cminus implements scanner {
         return currentLine.charAt(linePos++);
     }
 
-    // Puts back the last char read from the input file if it does not match the
-    // current state
     private void ungetNextChar() {
         if (!EOF_flag && linePos > 0) {
             linePos--;
         }
     }
 
-    // Retrieves the next character and thenm tries to assign it a token type
-    // It will keep getting chars till it can assign them a token type
-    // Once it finds a token type, it will get to the DONE state and return the
-    // token
     public Token getToken() throws IOException {
         StringBuilder tokenBuilder = new StringBuilder();
         State state = State.START;
@@ -186,7 +177,6 @@ public class cminus implements scanner {
                         }
                     }
                     break;
-
                 case INSLASH:
                     if (c == '*') {
                         state = State.INCOMMENT;
@@ -197,7 +187,6 @@ public class cminus implements scanner {
                         currentToken = TokenType.OVER;
                     }
                     break;
-
                 case INCOMMENT:
                     save = false;
                     if (c == -1) {
@@ -218,48 +207,43 @@ public class cminus implements scanner {
                         state = State.INCOMMENT;
                     }
                     break;
-
                 case INLT:
                     state = State.DONE;
-                    if (c == '=') {
+                    if (c == '=')
                         currentToken = TokenType.LTE;
-                    } else {
+                    else {
                         ungetNextChar();
                         currentToken = TokenType.LT;
                     }
                     break;
-
                 case INGT:
                     state = State.DONE;
-                    if (c == '=') {
+                    if (c == '=')
                         currentToken = TokenType.GTE;
-                    } else {
+                    else {
                         ungetNextChar();
                         currentToken = TokenType.GT;
                     }
                     break;
-
                 case INEQ:
                     state = State.DONE;
-                    if (c == '=') {
+                    if (c == '=')
                         currentToken = TokenType.EQ;
-                    } else {
+                    else {
                         ungetNextChar();
                         currentToken = TokenType.ASSIGN;
                     }
                     break;
-
                 case INNOT:
                     state = State.DONE;
-                    if (c == '=') {
+                    if (c == '=')
                         currentToken = TokenType.NEQ;
-                    } else {
+                    else {
                         ungetNextChar();
                         save = false;
                         currentToken = TokenType.ERROR;
                     }
                     break;
-
                 case INNUM:
                     if (Character.isLetter(c)) {
                         tokenString += (char) c;
@@ -272,7 +256,6 @@ public class cminus implements scanner {
                         currentToken = TokenType.NUM;
                     }
                     break;
-
                 case INID:
                     if (!Character.isLetterOrDigit(c)) {
                         ungetNextChar();
@@ -283,15 +266,13 @@ public class cminus implements scanner {
                     break;
             }
 
-            if (save && tokenBuilder.length() < MAXTOKENLEN) {
+            if (save && tokenBuilder.length() < MAXTOKENLEN)
                 tokenBuilder.append((char) c);
-            }
 
             if (state == State.DONE) {
                 tokenString = tokenBuilder.toString();
-                if (currentToken == TokenType.ID) {
+                if (currentToken == TokenType.ID)
                     currentToken = reservedWords.getOrDefault(tokenString, TokenType.ID);
-                }
             }
         }
 

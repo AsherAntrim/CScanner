@@ -1,0 +1,166 @@
+SYNTAX ERRORS:
+Line 11: Expected SEMI, found PLUS
+Line 12: Expected SEMI, found MINUS
+Line 13: Expected SEMI, found TIMES
+Line 14: Expected SEMI, found OVER
+Line 38: Expected SEMI, found MINUS
+
+Program [line: 4]
+  Function: ( returns void [line: 4]
+    Parameters:
+      void
+    Body:
+      Compound Statement [line: 4]
+        Local Declarations:
+          Variable: ; of type int [line: 5]
+          Variable: ; of type int [line: 6]
+        Statements:
+          Expression Statement [line: 9]
+            Assign [line: 9]
+              Left:
+                Variable: x [line: 9]
+              Right:
+                Number: 42 [line: 9]
+          Expression Statement [line: 10]
+            Assign [line: 10]
+              Left:
+                Variable: y [line: 10]
+              Right:
+                Number: 123 [line: 10]
+          Expression Statement [line: 11]
+            Assign [line: 11]
+              Left:
+                Variable: x [line: 11]
+              Right:
+                Variable: x [line: 11]
+          Expression Statement [line: 12]
+            Assign [line: 12]
+              Left:
+                Variable: x [line: 12]
+              Right:
+                Variable: x [line: 12]
+          Expression Statement [line: 13]
+            Assign [line: 13]
+              Left:
+                Variable: x [line: 13]
+              Right:
+                Variable: x [line: 13]
+          Expression Statement [line: 14]
+            Assign [line: 14]
+              Left:
+                Variable: x [line: 14]
+              Right:
+                Variable: x [line: 14]
+          If Statement [line: 17]
+            Condition:
+              Comparison: < [line: 17]
+                Left:
+                  Variable: x [line: 17]
+                Right:
+                  Variable: y [line: 17]
+            Then Branch:
+              Compound Statement [line: 17]
+                Statements:
+                  Expression Statement [line: 18]
+                    Assign [line: 18]
+                      Left:
+                        Variable: x [line: 18]
+                      Right:
+                        Number: 0 [line: 18]
+          If Statement [line: 20]
+            Condition:
+              Comparison: <= [line: 20]
+                Left:
+                  Variable: x [line: 20]
+                Right:
+                  Variable: y [line: 20]
+            Then Branch:
+              Compound Statement [line: 20]
+                Statements:
+                  Expression Statement [line: 21]
+                    Assign [line: 21]
+                      Left:
+                        Variable: y [line: 21]
+                      Right:
+                        Number: 0 [line: 21]
+          If Statement [line: 23]
+            Condition:
+              Comparison: > [line: 23]
+                Left:
+                  Variable: x [line: 23]
+                Right:
+                  Variable: y [line: 23]
+            Then Branch:
+              Compound Statement [line: 23]
+                Statements:
+                  Expression Statement [line: 24]
+                    Assign [line: 24]
+                      Left:
+                        Variable: x [line: 24]
+                      Right:
+                        Number: 1 [line: 24]
+          If Statement [line: 26]
+            Condition:
+              Comparison: >= [line: 26]
+                Left:
+                  Variable: x [line: 26]
+                Right:
+                  Variable: y [line: 26]
+            Then Branch:
+              Compound Statement [line: 26]
+                Statements:
+                  Expression Statement [line: 27]
+                    Assign [line: 27]
+                      Left:
+                        Variable: y [line: 27]
+                      Right:
+                        Number: 1 [line: 27]
+          If Statement [line: 29]
+            Condition:
+              Comparison: == [line: 29]
+                Left:
+                  Variable: x [line: 29]
+                Right:
+                  Variable: y [line: 29]
+            Then Branch:
+              Compound Statement [line: 29]
+                Statements:
+                  Expression Statement [line: 30]
+                    Assign [line: 30]
+                      Left:
+                        Variable: x [line: 30]
+                      Right:
+                        Number: 2 [line: 30]
+          If Statement [line: 32]
+            Condition:
+              Comparison: != [line: 32]
+                Left:
+                  Variable: x [line: 32]
+                Right:
+                  Variable: y [line: 32]
+            Then Branch:
+              Compound Statement [line: 32]
+                Statements:
+                  Expression Statement [line: 33]
+                    Assign [line: 33]
+                      Left:
+                        Variable: y [line: 33]
+                      Right:
+                        Number: 2 [line: 33]
+          While Statement [line: 37]
+            Condition:
+              Comparison: > [line: 37]
+                Left:
+                  Variable: x [line: 37]
+                Right:
+                  Number: 0 [line: 37]
+            Body:
+              Compound Statement [line: 37]
+                Statements:
+                  Expression Statement [line: 38]
+                    Assign [line: 38]
+                      Left:
+                        Variable: x [line: 38]
+                      Right:
+                        Variable: x [line: 38]
+          Return Statement [line: 41]
