@@ -102,20 +102,7 @@ public class cminus implements scanner {
                     break;
                 case START:
                     if (Character.isDigit(c)) {
-                        if (c == '0') {
-                            int nextChar = getNextChar();
-                            if (Character.isDigit(nextChar)) {
-                                tokenString += (char) c;
-                                tokenString += (char) nextChar;
-                                currentToken = TokenType.ERROR;
-                                state = State.DONE;
-                            } else {
-                                ungetNextChar();
-                                state = State.INNUM;
-                            }
-                        } else {
-                            state = State.INNUM;
-                        }
+                        state = State.INNUM;
                     } else if (Character.isLetter(c)) {
                         state = State.INID;
                     } else if (Character.isWhitespace(c)) {
@@ -184,6 +171,8 @@ public class cminus implements scanner {
                     } else {
                         state = State.DONE;
                         ungetNextChar();
+                        save = true;
+                        tokenBuilder.append('/');
                         currentToken = TokenType.OVER;
                     }
                     break;
@@ -275,7 +264,6 @@ public class cminus implements scanner {
                     currentToken = reservedWords.getOrDefault(tokenString, TokenType.ID);
             }
         }
-
-        return new Token(currentToken, tokenString, lineNo);
+        return new Token(currentToken, tokenString.trim(), lineNo);
     }
 }

@@ -1,0 +1,119 @@
+SYNTAX ERRORS:
+Line 10: Invalid statement
+Line 10: Invalid statement
+Line 11: Invalid statement
+Line 11: Invalid statement
+Line 14: Invalid factor
+Line 15: Invalid expression
+Line 15: Expected SEMI, found ERROR
+Line 15: Invalid statement
+Line 18: Invalid expression
+Line 18: Expected SEMI, found ERROR
+Line 18: Invalid statement
+Line 19: Invalid expression
+Line 19: Expected SEMI, found ERROR
+Line 19: Invalid statement
+Line 25: Expected SEMI, found INT
+Line 25: Invalid statement
+Line 25: Invalid expression
+Line 25: Expected RBRACK, found MINUS
+Line 25: Expected SEMI, found RBRACK
+Line 25: Invalid statement
+Line 26: Invalid statement
+Line 29: Invalid expression
+Line 29: Expected SEMI, found ERROR
+Line 29: Invalid statement
+Line 29: Invalid statement
+Line 29: Expected SEMI, found ERROR
+Line 29: Invalid statement
+Line 32: Invalid expression
+Line 32: Expected SEMI, found RBRACE
+
+Program [line: 4]
+  Function: main returns void [line: 4]
+    Parameters:
+      void
+    Body:
+      Compound Statement [line: 4]
+        Local Declarations:
+          Variable: x of type int [line: 6]
+        Statements:
+          Expression Statement [line: 7]
+            Assign [line: 7]
+              Left:
+                Variable: x [line: 7]
+              Right:
+                Number: 42 [line: 7]
+          Expression Statement [line: 10]
+            Variable: ar [line: 10]
+          Expression Statement [line: 11]
+            Variable: var [line: 11]
+          Expression Statement [line: 14]
+            Assign [line: 14]
+              Left:
+                Variable: x [line: 14]
+              Right:
+                Operator: * [line: 14]
+                  Left:
+                    Operator: * [line: 14]
+                      Left:
+                        Number: 5 [line: 14]
+                      Right:
+                        Number: 0 [line: 14]
+                  Right:
+                    Number: 2 [line: 14]
+          Expression Statement [line: 15]
+            Assign [line: 15]
+              Left:
+                Variable: x [line: 15]
+              Right:
+                Number: 0 [line: 15]
+          Expression Statement [line: 15]
+            Number: 5 [line: 15]
+          Expression Statement [line: 18]
+            Assign [line: 18]
+              Left:
+                Variable: x [line: 18]
+              Right:
+                Number: 0 [line: 18]
+          Expression Statement [line: 18]
+            Number: 5 [line: 18]
+          Expression Statement [line: 19]
+            Assign [line: 19]
+              Left:
+                Variable: x [line: 19]
+              Right:
+                Number: 0 [line: 19]
+          Expression Statement [line: 19]
+            Number: 5 [line: 19]
+          Expression Statement [line: 22]
+            Assign [line: 22]
+              Left:
+                Variable: x [line: 22]
+              Right:
+                Number: 5 [line: 22]
+          Expression Statement [line: 25]
+            Operator: - [line: 25]
+              Left:
+                Variable: arr [line: 25]
+                  Index:
+                    Number: 0 [line: 25]
+              Right:
+                Number: 1 [line: 25]
+          Empty Statement [line: 25]
+          Expression Statement [line: 26]
+            Variable: arr [line: 26]
+              Index:
+                Number: 0 [line: 26]
+          Expression Statement [line: 29]
+            Assign [line: 29]
+              Left:
+                Variable: x [line: 29]
+              Right:
+                Number: 0 [line: 29]
+          Expression Statement [line: 29]
+            Variable: n [line: 29]
+          Empty Statement [line: 29]
+          Return Statement [line: 31]
+            Expression:
+              Number: 0 [line: 32]

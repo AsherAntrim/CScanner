@@ -1,0 +1,304 @@
+Program [line: 4]
+  Function: partition returns int [line: 4]
+    Parameters:
+      Parameter: arr[] of type int [line: 4]
+      Parameter: low of type int [line: 4]
+      Parameter: high of type int [line: 4]
+    Body:
+      Compound Statement [line: 4]
+        Local Declarations:
+          Variable: pivot of type int [line: 5]
+          Variable: i of type int [line: 6]
+          Variable: j of type int [line: 7]
+          Variable: temp of type int [line: 8]
+        Statements:
+          Expression Statement [line: 10]
+            Assign [line: 10]
+              Left:
+                Variable: pivot [line: 10]
+              Right:
+                Variable: arr [line: 10]
+                  Index:
+                    Variable: high [line: 10]
+          Expression Statement [line: 11]
+            Assign [line: 11]
+              Left:
+                Variable: i [line: 11]
+              Right:
+                Operator: - [line: 11]
+                  Left:
+                    Variable: low [line: 11]
+                  Right:
+                    Number: 1 [line: 11]
+          Expression Statement [line: 13]
+            Assign [line: 13]
+              Left:
+                Variable: j [line: 13]
+              Right:
+                Variable: low [line: 13]
+          While Statement [line: 14]
+            Condition:
+              Comparison: < [line: 14]
+                Left:
+                  Variable: j [line: 14]
+                Right:
+                  Variable: high [line: 14]
+            Body:
+              Compound Statement [line: 14]
+                Statements:
+                  If Statement [line: 15]
+                    Condition:
+                      Comparison: <= [line: 15]
+                        Left:
+                          Variable: arr [line: 15]
+                            Index:
+                              Variable: j [line: 15]
+                        Right:
+                          Variable: pivot [line: 15]
+                    Then Branch:
+                      Compound Statement [line: 15]
+                        Statements:
+                          Expression Statement [line: 16]
+                            Assign [line: 16]
+                              Left:
+                                Variable: i [line: 16]
+                              Right:
+                                Operator: + [line: 16]
+                                  Left:
+                                    Variable: i [line: 16]
+                                  Right:
+                                    Number: 1 [line: 16]
+                          Expression Statement [line: 17]
+                            Assign [line: 17]
+                              Left:
+                                Variable: temp [line: 17]
+                              Right:
+                                Variable: arr [line: 17]
+                                  Index:
+                                    Variable: i [line: 17]
+                          Expression Statement [line: 18]
+                            Assign [line: 18]
+                              Left:
+                                Variable: arr [line: 18]
+                                  Index:
+                                    Variable: i [line: 18]
+                              Right:
+                                Variable: arr [line: 18]
+                                  Index:
+                                    Variable: j [line: 18]
+                          Expression Statement [line: 19]
+                            Assign [line: 19]
+                              Left:
+                                Variable: arr [line: 19]
+                                  Index:
+                                    Variable: j [line: 19]
+                              Right:
+                                Variable: temp [line: 19]
+                  Expression Statement [line: 21]
+                    Assign [line: 21]
+                      Left:
+                        Variable: j [line: 21]
+                      Right:
+                        Operator: + [line: 21]
+                          Left:
+                            Variable: j [line: 21]
+                          Right:
+                            Number: 1 [line: 21]
+          Expression Statement [line: 24]
+            Assign [line: 24]
+              Left:
+                Variable: temp [line: 24]
+              Right:
+                Variable: arr [line: 24]
+                  Index:
+                    Operator: + [line: 24]
+                      Left:
+                        Variable: i [line: 24]
+                      Right:
+                        Number: 1 [line: 24]
+          Expression Statement [line: 25]
+            Assign [line: 25]
+              Left:
+                Variable: arr [line: 25]
+                  Index:
+                    Operator: + [line: 25]
+                      Left:
+                        Variable: i [line: 25]
+                      Right:
+                        Number: 1 [line: 25]
+              Right:
+                Variable: arr [line: 25]
+                  Index:
+                    Variable: high [line: 25]
+          Expression Statement [line: 26]
+            Assign [line: 26]
+              Left:
+                Variable: arr [line: 26]
+                  Index:
+                    Variable: high [line: 26]
+              Right:
+                Variable: temp [line: 26]
+          Return Statement [line: 28]
+            Expression:
+              Operator: + [line: 28]
+                Left:
+                  Variable: i [line: 28]
+                Right:
+                  Number: 1 [line: 28]
+  Function: quickSort returns void [line: 31]
+    Parameters:
+      Parameter: arr[] of type int [line: 31]
+      Parameter: low of type int [line: 31]
+      Parameter: high of type int [line: 31]
+    Body:
+      Compound Statement [line: 31]
+        Local Declarations:
+          Variable: pi of type int [line: 32]
+        Statements:
+          If Statement [line: 34]
+            Condition:
+              Comparison: < [line: 34]
+                Left:
+                  Variable: low [line: 34]
+                Right:
+                  Variable: high [line: 34]
+            Then Branch:
+              Compound Statement [line: 34]
+                Statements:
+                  Expression Statement [line: 35]
+                    Assign [line: 35]
+                      Left:
+                        Variable: pi [line: 35]
+                      Right:
+                        Call to function: partition [line: 35]
+                          Arguments:
+                            Variable: arr [line: 35]
+                            Variable: low [line: 35]
+                            Variable: high [line: 35]
+                  Expression Statement [line: 36]
+                    Call to function: quickSort [line: 36]
+                      Arguments:
+                        Variable: arr [line: 36]
+                        Variable: low [line: 36]
+                        Operator: - [line: 36]
+                          Left:
+                            Variable: pi [line: 36]
+                          Right:
+                            Number: 1 [line: 36]
+                  Expression Statement [line: 37]
+                    Call to function: quickSort [line: 37]
+                      Arguments:
+                        Variable: arr [line: 37]
+                        Operator: + [line: 37]
+                          Left:
+                            Variable: pi [line: 37]
+                          Right:
+                            Number: 1 [line: 37]
+                        Variable: high [line: 37]
+  Function: main returns void [line: 41]
+    Parameters:
+      void
+    Body:
+      Compound Statement [line: 41]
+        Local Declarations:
+          Variable: arr[10] of type int [line: 42]
+          Variable: n of type int [line: 43]
+          Variable: i of type int [line: 44]
+        Statements:
+          Expression Statement [line: 47]
+            Assign [line: 47]
+              Left:
+                Variable: n [line: 47]
+              Right:
+                Number: 10 [line: 47]
+          Expression Statement [line: 48]
+            Assign [line: 48]
+              Left:
+                Variable: arr [line: 48]
+                  Index:
+                    Number: 0 [line: 48]
+              Right:
+                Number: 64 [line: 48]
+          Expression Statement [line: 49]
+            Assign [line: 49]
+              Left:
+                Variable: arr [line: 49]
+                  Index:
+                    Number: 1 [line: 49]
+              Right:
+                Number: 34 [line: 49]
+          Expression Statement [line: 50]
+            Assign [line: 50]
+              Left:
+                Variable: arr [line: 50]
+                  Index:
+                    Number: 2 [line: 50]
+              Right:
+                Number: 25 [line: 50]
+          Expression Statement [line: 51]
+            Assign [line: 51]
+              Left:
+                Variable: arr [line: 51]
+                  Index:
+                    Number: 3 [line: 51]
+              Right:
+                Number: 12 [line: 51]
+          Expression Statement [line: 52]
+            Assign [line: 52]
+              Left:
+                Variable: arr [line: 52]
+                  Index:
+                    Number: 4 [line: 52]
+              Right:
+                Number: 22 [line: 52]
+          Expression Statement [line: 53]
+            Assign [line: 53]
+              Left:
+                Variable: arr [line: 53]
+                  Index:
+                    Number: 5 [line: 53]
+              Right:
+                Number: 11 [line: 53]
+          Expression Statement [line: 54]
+            Assign [line: 54]
+              Left:
+                Variable: arr [line: 54]
+                  Index:
+                    Number: 6 [line: 54]
+              Right:
+                Number: 90 [line: 54]
+          Expression Statement [line: 55]
+            Assign [line: 55]
+              Left:
+                Variable: arr [line: 55]
+                  Index:
+                    Number: 7 [line: 55]
+              Right:
+                Number: 87 [line: 55]
+          Expression Statement [line: 56]
+            Assign [line: 56]
+              Left:
+                Variable: arr [line: 56]
+                  Index:
+                    Number: 8 [line: 56]
+              Right:
+                Number: 45 [line: 56]
+          Expression Statement [line: 57]
+            Assign [line: 57]
+              Left:
+                Variable: arr [line: 57]
+                  Index:
+                    Number: 9 [line: 57]
+              Right:
+                Number: 3 [line: 57]
+          Expression Statement [line: 59]
+            Call to function: quickSort [line: 59]
+              Arguments:
+                Variable: arr [line: 59]
+                Number: 0 [line: 59]
+                Operator: - [line: 59]
+                  Left:
+                    Variable: n [line: 59]
+                  Right:
+                    Number: 1 [line: 59]
+          Return Statement [line: 61]

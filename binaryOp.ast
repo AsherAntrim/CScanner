@@ -1,0 +1,19 @@
+Program [line: 1]
+  Function: main returns void [line: 1]
+    Parameters:
+      void
+    Body:
+      Compound Statement [line: 1]
+        Local Declarations:
+          Variable: x of type int [line: 2]
+        Statements:
+          Expression Statement [line: 3]
+            Assign [line: 3]
+              Left:
+                Variable: x [line: 3]
+              Right:
+                Operator: + [line: 3]
+                  Left:
+                    Number: 5 [line: 3]
+                  Right:
+                    Number: 3 [line: 3]

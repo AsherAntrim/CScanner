@@ -12,8 +12,6 @@ public class CMinusParser implements Parser {
     private scanner scanner;
     private Token currentToken;
     private ProgramNode root;
-
-    // For error handling
     private boolean hasError = false;
     private List<String> errors = new ArrayList<>();
 
@@ -23,13 +21,8 @@ public class CMinusParser implements Parser {
 
     @Override
     public void parse() throws IOException {
-        // Get the first token
         advance();
-
-        // Parse the program
         root = program();
-
-        // Check if we reached the end of file
         if (currentToken.getType() != TokenType.ENDFILE) {
             reportError("Expected end of file");
         }
@@ -39,8 +32,6 @@ public class CMinusParser implements Parser {
     public void printTree(String outputFile) throws IOException {
         try (PrintWriter writer = new PrintWriter(new FileWriter(outputFile))) {
             StringBuilder sb = new StringBuilder();
-
-            // Print errors first if any
             if (hasError) {
                 sb.append("SYNTAX ERRORS:\n");
                 for (String error : errors) {
@@ -48,8 +39,6 @@ public class CMinusParser implements Parser {
                 }
                 sb.append("\n");
             }
-
-            // Print the AST
             if (root != null) {
                 root.printTree(sb, "");
             } else {
@@ -60,20 +49,27 @@ public class CMinusParser implements Parser {
         }
     }
 
-    // Helper method to advance to the next token
+    // Method to get the next token from the scanner
     private void advance() throws IOException {
         currentToken = scanner.getToken();
-        System.out.println("DEBUG: Token: " + currentToken.getType() + ", Value: " + currentToken.getValue());
+        if (currentToken.getValue() != null) {
+            currentToken = new Token(
+                currentToken.getType(),
+                currentToken.getValue().trim(),
+                currentToken.getLineNo()
+            );
+        }
+        
+        System.out.println("DEBUG: Token: " + currentToken.getType() + 
+                          ", Value: " + currentToken.getValue());
     }
 
-    // Helper method to match expected tokens
+    // Match expected tokens
     private boolean match(TokenType expected) throws IOException {
         if (currentToken.getType() == expected) {
             advance();
             return true;
         }
-
-        // Report error but don't advance - this is crucial
         reportError("Expected " + expected + ", found " + currentToken.getType());
         return false;
     }
@@ -84,104 +80,92 @@ public class CMinusParser implements Parser {
         errors.add("Line " + currentToken.getLineNo() + ": " + message);
     }
 
-    // program → declaration-list
+    // program -> decl {decl}
     private ProgramNode program() throws IOException {
         ProgramNode node = new ProgramNode(currentToken.getLineNo());
-        declarationList(node);
+        
+        DeclarationNode decl = decl();
+        if (decl != null) {
+            node.addDeclaration(decl);
+        }
+        while (currentToken.getType() == TokenType.INT || 
+               currentToken.getType() == TokenType.VOID) {
+            decl = decl();
+            if (decl != null) {
+                node.addDeclaration(decl);
+            }
+        }
+        
         return node;
     }
 
-    // declaration-list → declaration {declaration}
-    private void declarationList(ProgramNode programNode) throws IOException {
-        while (currentToken.getType() == TokenType.INT ||
-                currentToken.getType() == TokenType.VOID) {
-            DeclarationNode decl = declaration();
-            if (decl != null) {
-                programNode.addDeclaration(decl);
-            }
-        }
-    }
-
-    // declaration → var-declaration | fun-declaration
-    private DeclarationNode declaration() throws IOException {
+    // decl -> void ID fun-decl' | int ID decl'
+    private DeclarationNode decl() throws IOException {
         int lineNum = currentToken.getLineNo();
-        TypeSpecifier type = typeSpecifier();
-
-        if (type == null) {
-            return null;
+        if (currentToken.getType() == TokenType.VOID) {
+            advance();
+            
+            if (currentToken.getType() != TokenType.ID) {
+                reportError("Expected identifier after 'void'");
+                return null;
+            }
+            
+            String name = currentToken.getValue();
+            advance();
+            
+            return funDeclPrime(lineNum, name, TypeSpecifier.VOID);
+        } 
+        else if (currentToken.getType() == TokenType.INT) {
+            advance();
+            
+            if (currentToken.getType() != TokenType.ID) {
+                reportError("Expected identifier after 'int'");
+                return null;
+            }
+            
+            String name = currentToken.getValue();
+            advance();
+            
+            return declPrime(lineNum, name, TypeSpecifier.INT);
         }
-
-        // Get the identifier
-        String name = null;
-        if (match(TokenType.ID)) {
-            name = currentToken.getValue();
-        } else {
-            return null;
-        }
-
-        // Check if it's a function or variable declaration
-        if (currentToken.getType() == TokenType.LPAREN) {
-            return funDeclaration(lineNum, name, type);
-        } else {
-            return varDeclaration(lineNum, name, type);
-        }
+        reportError("Expected 'void' or 'int'");
+        return null;
     }
 
-    // type-specifier → int | void
-    private TypeSpecifier typeSpecifier() throws IOException {
-        if (currentToken.getType() == TokenType.INT) {
+    // decl' -> ; | [num]; | fun-decl'
+    private DeclarationNode declPrime(int lineNum, String name, TypeSpecifier type) throws IOException {
+        if (currentToken.getType() == TokenType.SEMI) {
             advance();
-            return TypeSpecifier.INT;
-        } else if (currentToken.getType() == TokenType.VOID) {
-            advance();
-            return TypeSpecifier.VOID;
-        } else {
-            reportError("Expected type specifier (int or void)");
-            return null;
+            return new VarDeclarationNode(lineNum, name, type);
         }
-    }
-
-    // var-declaration → type-specifier ID ([ NUM ] | ε) ;
-    private VarDeclarationNode varDeclaration(int lineNum, String name, TypeSpecifier type) throws IOException {
-        VarDeclarationNode node;
-
-        // Check if it's an array declaration
-        if (currentToken.getType() == TokenType.LBRACK) {
+        else if (currentToken.getType() == TokenType.LBRACK) {
             advance();
+            int arraySize = 0;
             if (currentToken.getType() == TokenType.NUM) {
-                int arraySize = Integer.parseInt(currentToken.getValue());
+                arraySize = Integer.parseInt(currentToken.getValue());
                 advance();
-                if (match(TokenType.RBRACK)) {
-                    node = new VarDeclarationNode(lineNum, name, type, arraySize);
-                } else {
-                    node = new VarDeclarationNode(lineNum, name, type);
-                }
             } else {
                 reportError("Expected number for array size");
-                node = new VarDeclarationNode(lineNum, name, type);
-                if (currentToken.getType() == TokenType.RBRACK) {
-                    advance();
-                }
             }
-        } else {
-            node = new VarDeclarationNode(lineNum, name, type);
+            match(TokenType.RBRACK);
+            match(TokenType.SEMI);
+            return new VarDeclarationNode(lineNum, name, type, arraySize);
         }
-
-        match(TokenType.SEMI);
-        return node;
+        else if (currentToken.getType() == TokenType.LPAREN) {
+            return funDeclPrime(lineNum, name, type);
+        }
+        reportError("Invalid declaration");
+        return null;
     }
 
-    // fun-declaration → type-specifier ID ( params ) compound-stmt
-    private FunDeclarationNode funDeclaration(int lineNum, String name, TypeSpecifier type) throws IOException {
-        FunDeclarationNode node = new FunDeclarationNode(lineNum, name, type);
-
+    // fun-decl' -> (params) compound-stmt
+    private FunDeclarationNode funDeclPrime(int lineNum, String name, TypeSpecifier type) throws IOException {
+        FunDeclarationNode node = new FunDeclarationNode(lineNum, name, type); 
         match(TokenType.LPAREN);
         params(node);
         match(TokenType.RPAREN);
-
         CompoundStmtNode body = compoundStmt();
         node.setBody(body);
-
         return node;
     }
 
@@ -189,92 +173,85 @@ public class CMinusParser implements Parser {
     private void params(FunDeclarationNode funNode) throws IOException {
         if (currentToken.getType() == TokenType.VOID) {
             advance();
-            return; // No parameters
+            return;
         }
-
         paramList(funNode);
     }
 
-    // param-list → param {, param}
+    // param-list → param{, param}
     private void paramList(FunDeclarationNode funNode) throws IOException {
         do {
             ParamNode param = param();
             if (param != null) {
                 funNode.addParam(param);
             }
-
             if (currentToken.getType() != TokenType.COMMA) {
                 break;
             }
-            advance(); // Skip the comma
+            advance();
         } while (true);
     }
 
-    // param → type-specifier ID | type-specifier ID [ ]
+    // param → int ID[\[\]]
     private ParamNode param() throws IOException {
         int lineNum = currentToken.getLineNo();
-        TypeSpecifier type = typeSpecifier();
-
-        if (type == null) {
+        if (currentToken.getType() != TokenType.INT) {
+            reportError("Expected 'int' in parameter");
             return null;
         }
-
-        String name = null;
-        if (match(TokenType.ID)) {
-            name = currentToken.getValue();
-        } else {
+        advance();
+        if (currentToken.getType() != TokenType.ID) {
+            reportError("Expected identifier for parameter");
             return null;
         }
-
+        String name = currentToken.getValue();
+        advance();
         boolean isArray = false;
         if (currentToken.getType() == TokenType.LBRACK) {
             advance();
             match(TokenType.RBRACK);
             isArray = true;
         }
-
-        return new ParamNode(lineNum, name, type, isArray);
+        return new ParamNode(lineNum, name, TypeSpecifier.INT, isArray);
     }
 
-    // compound-stmt → { local-declarations statement-list }
+    // compound-stmt → \{ local-declarations statement-list \}
     private CompoundStmtNode compoundStmt() throws IOException {
         int lineNum = currentToken.getLineNo();
         CompoundStmtNode node = new CompoundStmtNode(lineNum);
-
         match(TokenType.LBRACE);
-
-        // Parse local declarations
         localDeclarations(node);
-
-        // Parse statements
         statementList(node);
-
         match(TokenType.RBRACE);
-
         return node;
     }
 
     // local-declarations → {var-declaration}
     private void localDeclarations(CompoundStmtNode compoundNode) throws IOException {
-        while (currentToken.getType() == TokenType.INT ||
-                currentToken.getType() == TokenType.VOID) {
+        while (currentToken.getType() == TokenType.INT) {
             int lineNum = currentToken.getLineNo();
-            TypeSpecifier type = typeSpecifier();
-
-            if (type == null) {
+            advance();
+            if (currentToken.getType() != TokenType.ID) {
+                reportError("Expected identifier after 'int'");
                 break;
             }
-
-            String name = null;
-            if (match(TokenType.ID)) {
-                name = currentToken.getValue();
+            String name = currentToken.getValue();
+            advance();
+            if (currentToken.getType() == TokenType.LBRACK) {
+                advance();
+                int arraySize = 0;
+                if (currentToken.getType() == TokenType.NUM) {
+                    arraySize = Integer.parseInt(currentToken.getValue());
+                    advance();
+                } else {
+                    reportError("Expected number for array size");
+                }
+                match(TokenType.RBRACK);
+                match(TokenType.SEMI);
+                compoundNode.addLocalDeclaration(new VarDeclarationNode(lineNum, name, TypeSpecifier.INT, arraySize));
             } else {
-                break;
-            }
-
-            VarDeclarationNode varNode = varDeclaration(lineNum, name, type);
-            if (varNode != null) {
-                compoundNode.addLocalDeclaration(varNode);
+                match(TokenType.SEMI);
+                compoundNode.addLocalDeclaration(new VarDeclarationNode(lineNum, name, TypeSpecifier.INT));
             }
         }
     }
@@ -290,8 +267,7 @@ public class CMinusParser implements Parser {
         }
     }
 
-    // statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt
-    // | return-stmt
+    // statement → expression-stmt | compound-stmt | selection-stmt | iteration-stmt | return-stmt
     private StatementNode statement() throws IOException {
         switch (currentToken.getType()) {
             case SEMI:
@@ -309,54 +285,31 @@ public class CMinusParser implements Parser {
                 return returnStmt();
             default:
                 reportError("Invalid statement");
-                advance(); // Error recovery
+                advance();
                 return null;
         }
     }
 
-    // expression-stmt → expression ; | ;
-    // expression-stmt → expression ; | ;
-    // expression-stmt → expression ; | ;
+    // expression-stmt → [expression];
     private ExpressionStmtNode expressionStmt() throws IOException {
         int lineNum = currentToken.getLineNo();
-
         if (currentToken.getType() == TokenType.SEMI) {
             advance();
             return new ExpressionStmtNode(lineNum);
         }
-
         ExpressionNode expr = expression();
-
-        // Modified approach - check for semicolon but handle gracefully if missing
-        if (currentToken.getType() == TokenType.SEMI) {
-            advance();
-        } else {
-            reportError("Expected SEMI, found " + currentToken.getType());
-            // Skip until semicolon or next statement
-            while (currentToken.getType() != TokenType.SEMI &&
-                    currentToken.getType() != TokenType.RBRACE &&
-                    currentToken.getType() != TokenType.ENDFILE) {
-                advance();
-            }
-            if (currentToken.getType() == TokenType.SEMI) {
-                advance();
-            }
-        }
-
+        match(TokenType.SEMI);
         return new ExpressionStmtNode(lineNum, expr);
     }
 
-    // selection-stmt → if ( expression ) statement [else statement]
+    // selection-stmt → if (expression) statement [else statement]
     private SelectionStmtNode selectionStmt() throws IOException {
         int lineNum = currentToken.getLineNo();
-
         match(TokenType.IF);
         match(TokenType.LPAREN);
         ExpressionNode condition = expression();
         match(TokenType.RPAREN);
-
         StatementNode thenBranch = statement();
-
         if (currentToken.getType() == TokenType.ELSE) {
             advance();
             StatementNode elseBranch = statement();
@@ -366,26 +319,21 @@ public class CMinusParser implements Parser {
         }
     }
 
-    // iteration-stmt → while ( expression ) statement
+    // iteration-stmt → while (expression) statement
     private IterationStmtNode iterationStmt() throws IOException {
         int lineNum = currentToken.getLineNo();
-
         match(TokenType.WHILE);
         match(TokenType.LPAREN);
         ExpressionNode condition = expression();
         match(TokenType.RPAREN);
-
         StatementNode body = statement();
-
         return new IterationStmtNode(lineNum, condition, body);
     }
 
-    // return-stmt → return ; | return expression ;
+    // return-stmt → return [expression];
     private ReturnStmtNode returnStmt() throws IOException {
         int lineNum = currentToken.getLineNo();
-
         match(TokenType.RETURN);
-
         if (currentToken.getType() == TokenType.SEMI) {
             advance();
             return new ReturnStmtNode(lineNum);
@@ -396,68 +344,68 @@ public class CMinusParser implements Parser {
         }
     }
 
-    // expression → var = expression | simple-expression
-    // expression → var = expression | simple-expression
+    // expression -> (expression) simple-expression' | NUM simple-expression' | ID expression'
     private ExpressionNode expression() throws IOException {
         int lineNum = currentToken.getLineNo();
-
-        // If the expression starts with an ID, it could be a var = expression or a
-        // simple-expression
-        if (currentToken.getType() == TokenType.ID) {
+        if (currentToken.getType() == TokenType.LPAREN) {
+            advance();
+            ExpressionNode expr = expression();
+            match(TokenType.RPAREN);
+            return simpleExpressionPrime(expr);
+        } 
+        else if (currentToken.getType() == TokenType.NUM) {
+            int value = Integer.parseInt(currentToken.getValue());
+            advance();
+            return simpleExpressionPrime(new NumberNode(lineNum, value));
+        }
+        else if (currentToken.getType() == TokenType.ID) {
             String id = currentToken.getValue();
             advance();
-
-            // Check if it's an array access
-            ExpressionNode indexExpr = null;
-            if (currentToken.getType() == TokenType.LBRACK) {
-                advance();
-                indexExpr = expression();
-                match(TokenType.RBRACK);
-            }
-
-            VarExpressionNode var = new VarExpressionNode(lineNum, id, indexExpr);
-
-            // If there's an assignment, it's a var = expression
-            if (currentToken.getType() == TokenType.ASSIGN) {
-                advance();
-                ExpressionNode rightExpr = expression();
-                return new AssignExpressionNode(lineNum, var, rightExpr);
-            }
-
-            // Otherwise, it's the start of a simple-expression
-            // Pass the variable node we've already parsed
-            return simpleExpression(lineNum, var);
+            return expressionPrime(lineNum, id);
         }
-
-        // Not a variable or assignment, must be a simple expression
-        return simpleExpression(lineNum, null);
+        reportError("Invalid expression");
+        return new NumberNode(lineNum, 0);
     }
 
-    // var → ID [[ expression ]]
-    private VarExpressionNode var() throws IOException {
-        int lineNum = currentToken.getLineNo();
-
-        String id = currentToken.getValue();
-        match(TokenType.ID);
-
-        // Check if it's an array access
-        if (currentToken.getType() == TokenType.LBRACK) {
+    // expression' -> = expression | [expression] expression'' | [(args)] simple-expression'
+    private ExpressionNode expressionPrime(int lineNum, String id) throws IOException {
+        if (currentToken.getType() == TokenType.ASSIGN) {
+            advance();
+            ExpressionNode rightExpr = expression();
+            return new AssignExpressionNode(lineNum, new VarExpressionNode(lineNum, id), rightExpr);
+        }
+        else if (currentToken.getType() == TokenType.LBRACK) {
             advance();
             ExpressionNode indexExpr = expression();
             match(TokenType.RBRACK);
-            return new VarExpressionNode(lineNum, id, indexExpr);
+            
+            VarExpressionNode var = new VarExpressionNode(lineNum, id, indexExpr);
+            return expressionDoublePrime(lineNum, var);
         }
-
-        return new VarExpressionNode(lineNum, id);
+        else if (currentToken.getType() == TokenType.LPAREN) {
+            advance();
+            CallNode callNode = new CallNode(lineNum, id);
+            args(callNode);
+            match(TokenType.RPAREN);
+            return simpleExpressionPrime(callNode);
+        }
+        return simpleExpressionPrime(new VarExpressionNode(lineNum, id));
     }
 
-    // simple-expression → additive-expression relop additive-expression |
-    // additive-expression
-    private ExpressionNode simpleExpression(int lineNum, ExpressionNode leftExpr) throws IOException {
-        // If we have a leftExpr passed in, it's from an ID that we've already processed
-        ExpressionNode left = (leftExpr != null) ? leftExpr : additiveExpression();
-    
-        // Check if there's a relational operator
+    // expression'' -> = expression | simple-expression'
+    private ExpressionNode expressionDoublePrime(int lineNum, VarExpressionNode var) throws IOException {
+        if (currentToken.getType() == TokenType.ASSIGN) {
+            advance();
+            ExpressionNode rightExpr = expression();
+            return new AssignExpressionNode(lineNum, var, rightExpr);
+        }
+        return simpleExpressionPrime(var);
+    }
+
+    // simple-expression' -> additive-expression' [relop additive-expression']
+    private ExpressionNode simpleExpressionPrime(ExpressionNode leftExpr) throws IOException {
+        int lineNum = leftExpr.getLineNum();
+        ExpressionNode left = additiveExpressionPrime(leftExpr);
         RelOpType operator = null;
         switch (currentToken.getType()) {
             case LT:
@@ -479,144 +427,110 @@ public class CMinusParser implements Parser {
                 operator = RelOpType.NEQ;
                 break;
             default:
-                return left; // No relational operator, just return the additive expression
+                return left;
         }
-    
-        advance(); // Skip the relational operator
-        ExpressionNode right = additiveExpression();
-    
+        advance();
+        ExpressionNode right = additiveExpressionPrime(null);
         return new SimpleExpressionNode(lineNum, left, operator, right);
     }
 
-    // additive-expression → term {addop term}
-    private ExpressionNode additiveExpression() throws IOException {
-        int lineNum = currentToken.getLineNo();
-        ExpressionNode left = term();
-
+    // additive-expression' -> term' {addop term'}
+    private ExpressionNode additiveExpressionPrime(ExpressionNode leftExpr) throws IOException {
+        ExpressionNode left = (leftExpr != null) ? 
+                              termPrime(leftExpr) : 
+                              termPrime(null);
+        int lineNum = left.getLineNum();
         while (currentToken.getType() == TokenType.PLUS || 
-            currentToken.getType() == TokenType.MINUS) {
+               currentToken.getType() == TokenType.MINUS) {
             AddOpType operator = (currentToken.getType() == TokenType.PLUS) ? 
                                 AddOpType.PLUS : AddOpType.MINUS;
             advance();
-            ExpressionNode right = term();
+            
+            ExpressionNode right = termPrime(null);
             left = new SimpleExpressionNode(lineNum, left, operator, right);
         }
-
         return left;
     }
 
-    // term → factor {mulop factor}
-    private ExpressionNode term() throws IOException {
-        int lineNum = currentToken.getLineNo();
-        ExpressionNode left = factor();
-
-        // Keep processing as long as we see * or / operators
-        while (currentToken.getType() == TokenType.TIMES ||
-                currentToken.getType() == TokenType.OVER) {
-            // Determine which operator we have
+    // term' -> factor {mulop factor}
+    private ExpressionNode termPrime(ExpressionNode leftExpr) throws IOException {
+        ExpressionNode left = (leftExpr != null) ? 
+                              leftExpr : 
+                              factor();
+        int lineNum = left.getLineNum();
+        while (currentToken.getType() == TokenType.TIMES || 
+               currentToken.getType() == TokenType.OVER) {
             MulOpType operator = (currentToken.getType() == TokenType.TIMES) ? MulOpType.TIMES : MulOpType.DIVIDE;
-            advance(); // Skip the operator
-
-            // Get the right operand (another factor)
+            advance();
             ExpressionNode right = factor();
-
-            // Create a new TermNode with the left and right operands
             left = new TermNode(lineNum, left, operator, right);
         }
-
         return left;
     }
 
-    // factor → ( expression ) | var | call | NUM
-    // factor → ( expression ) | var | call | NUM
-    private ExpressionNode factor() throws IOException {
-        int lineNum = currentToken.getLineNo();
-
-        switch (currentToken.getType()) {
-            case LPAREN:
-                advance();
-                ExpressionNode expr = expression();
-                match(TokenType.RPAREN);
-                return expr;
-
-            case ID:
-                String id = currentToken.getValue();
-                advance();
-
-                // Check if it's a function call
-                if (currentToken.getType() == TokenType.LPAREN) {
-                    return call(lineNum, id);
-                }
-
-                // It's a variable
-                ExpressionNode indexExpr = null;
-                if (currentToken.getType() == TokenType.LBRACK) {
-                    advance();
-                    indexExpr = expression();
-                    match(TokenType.RBRACK);
-                }
-
-                return new VarExpressionNode(lineNum, id, indexExpr);
-
-            case NUM:
-                int value = Integer.parseInt(currentToken.getValue());
-                advance();
-                return new NumberNode(lineNum, value);
-
-            default:
-                reportError("Invalid factor");
-                // Error recovery - try to advance past the bad token
-                advance();
-                return new NumberNode(lineNum, 0); // Return a dummy node
+    // factor -> (expression) | var | call | NUM
+private ExpressionNode factor() throws IOException {
+    int lineNum = currentToken.getLineNo();
+    if (currentToken.getType() == TokenType.LPAREN) {
+        advance();
+        ExpressionNode expr = expression();
+        match(TokenType.RPAREN);
+        return expr;
+    } 
+    else if (currentToken.getType() == TokenType.NUM) {
+        try {
+            int value = Integer.parseInt(currentToken.getValue().trim());
+            advance();
+            return new NumberNode(lineNum, value);
+        } catch (NumberFormatException e) {
+            System.err.println("Error parsing number: '" + currentToken.getValue() + "'");
+            reportError("Invalid number format: " + currentToken.getValue());
+            advance();
+            return new NumberNode(lineNum, 0);
         }
     }
-
-    // call → ID ( args )
-    private CallNode call(int lineNum, String functionName) throws IOException {
-        CallNode node = new CallNode(lineNum, functionName);
-
-        match(TokenType.LPAREN);
-        args(node);
-        match(TokenType.RPAREN);
-
-        return node;
+    else if (currentToken.getType() == TokenType.ID) {
+        String id = currentToken.getValue();
+        advance();
+        if (currentToken.getType() == TokenType.LBRACK) {
+            advance();
+            ExpressionNode indexExpr = expression();
+            match(TokenType.RBRACK);
+            return new VarExpressionNode(lineNum, id, indexExpr);
+        }
+        else if (currentToken.getType() == TokenType.LPAREN) {
+            CallNode callNode = new CallNode(lineNum, id);
+            advance();
+            if (currentToken.getType() != TokenType.RPAREN) {
+                argList(callNode);
+            }
+            match(TokenType.RPAREN);
+            return callNode;
+        }
+        return new VarExpressionNode(lineNum, id);
     }
+    
+    reportError("Invalid factor");
+    return new NumberNode(lineNum, 0);
+}
 
-    // args → arg-list | ε
+    // args -> arg-list | ε
     private void args(CallNode callNode) throws IOException {
         if (currentToken.getType() == TokenType.RPAREN) {
-            return; // Empty argument list
+            return;
         }
-
         argList(callNode);
     }
 
-    // arg-list → expression {, expression}
+    // arg-list -> expression{, expression}
     private void argList(CallNode callNode) throws IOException {
         do {
             ExpressionNode arg = expression();
             callNode.addArgument(arg);
-
             if (currentToken.getType() != TokenType.COMMA) {
                 break;
             }
-            advance(); // Skip the comma
+            advance();
         } while (true);
-    }
-
-    // Skip tokens until we reach a synchronization point
-    private void synchronize() throws IOException {
-        // Skip until we reach a statement terminator or block starter
-        while (currentToken.getType() != TokenType.SEMI &&
-                currentToken.getType() != TokenType.LBRACE &&
-                currentToken.getType() != TokenType.RBRACE &&
-                currentToken.getType() != TokenType.ENDFILE) {
-            advance();
-        }
-
-        // Skip the synchronization token if it's a semicolon
-        if (currentToken.getType() == TokenType.SEMI) {
-            advance();
-        }
     }
 }
