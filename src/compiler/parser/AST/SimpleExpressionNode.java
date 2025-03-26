@@ -1,14 +1,15 @@
 package compiler.parser.AST;
 
 /**
- * Represents a simple expression that can include both additive and relational operations
+ * Represents a simple expression that can include both additive and relational
+ * operations
  */
 public class SimpleExpressionNode extends ExpressionNode {
     private ExpressionNode leftExpr;
-    private RelOpType relOperator;  // For relational operations (<, >, etc.)
-    private AddOpType addOperator;  // For additive operations (+, -)
+    private RelOpType relOperator;
+    private AddOpType addOperator;
     private ExpressionNode rightExpr;
-    private boolean isRelational;   // Flag to determine type of expression
+    private boolean isRelational;
 
     // For a basic expression with no operators
     public SimpleExpressionNode(int lineNum, ExpressionNode expr) {
@@ -45,26 +46,23 @@ public class SimpleExpressionNode extends ExpressionNode {
     @Override
     public void printTree(StringBuilder sb, String indent) {
         if (relOperator == null && addOperator == null) {
-            // Just a simple expression
             leftExpr.printTree(sb, indent);
         } else if (isRelational) {
-            // Relational expression
             sb.append(indent).append("Comparison: ").append(relOperator);
             sb.append(" [line: ").append(lineNum).append("]\n");
-            
+
             sb.append(indent).append("  Left:\n");
             leftExpr.printTree(sb, indent + "    ");
-            
+
             sb.append(indent).append("  Right:\n");
             rightExpr.printTree(sb, indent + "    ");
         } else {
-            // Additive expression
             sb.append(indent).append("Operator: ").append(addOperator);
             sb.append(" [line: ").append(lineNum).append("]\n");
-            
+
             sb.append(indent).append("  Left:\n");
             leftExpr.printTree(sb, indent + "    ");
-            
+
             sb.append(indent).append("  Right:\n");
             rightExpr.printTree(sb, indent + "    ");
         }

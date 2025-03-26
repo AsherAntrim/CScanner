@@ -15,10 +15,9 @@ public abstract class AbstractNode {
     }
 
     /**
-     * Print this node and its children to the provided StringBuilder.
-     * 
-     * @param sb     StringBuilder to append the tree representation
-     * @param indent Current indentation level
+     * @param sb
+     * @param indent
      */
+
     public abstract void printTree(StringBuilder sb, String indent);
 }

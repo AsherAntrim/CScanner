@@ -36,8 +36,6 @@ public class FunDeclarationNode extends DeclarationNode {
         sb.append(indent).append("Function: ").append(name);
         sb.append(" returns ").append(type);
         sb.append(" [line: ").append(lineNum).append("]\n");
-
-        // Print parameters
         sb.append(indent).append("  Parameters:\n");
         if (params.isEmpty()) {
             sb.append(indent).append("    void\n");
@@ -47,7 +45,6 @@ public class FunDeclarationNode extends DeclarationNode {
             }
         }
 
-        // Print function body
         sb.append(indent).append("  Body:\n");
         if (body != null) {
             body.printTree(sb, indent + "    ");

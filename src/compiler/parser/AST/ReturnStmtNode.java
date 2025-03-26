@@ -8,7 +8,7 @@ public class ReturnStmtNode extends StatementNode {
 
     public ReturnStmtNode(int lineNum) {
         super(lineNum);
-        this.expression = null; // For "return;"
+        this.expression = null;
     }
 
     public ReturnStmtNode(int lineNum, ExpressionNode expression) {

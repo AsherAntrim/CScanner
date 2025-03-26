@@ -6,28 +6,23 @@ Line 11: Invalid statement
 Line 14: Invalid factor
 Line 15: Invalid expression
 Line 15: Expected SEMI, found ERROR
-Line 15: Invalid statement
 Line 18: Invalid expression
 Line 18: Expected SEMI, found ERROR
-Line 18: Invalid statement
 Line 19: Invalid expression
 Line 19: Expected SEMI, found ERROR
-Line 19: Invalid statement
 Line 25: Expected SEMI, found INT
-Line 25: Invalid statement
 Line 25: Invalid expression
 Line 25: Expected RBRACK, found MINUS
-Line 25: Expected SEMI, found RBRACK
+Line 25: Expected SEMI, found NUM
 Line 25: Invalid statement
 Line 26: Invalid statement
 Line 29: Invalid expression
 Line 29: Expected SEMI, found ERROR
 Line 29: Invalid statement
-Line 29: Invalid statement
 Line 29: Expected SEMI, found ERROR
-Line 29: Invalid statement
 Line 32: Invalid expression
 Line 32: Expected SEMI, found RBRACE
+Line 33: Expected RBRACE, found ENDFILE
 
 Program [line: 4]
   Function: main returns void [line: 4]
@@ -93,13 +88,9 @@ Program [line: 4]
               Right:
                 Number: 5 [line: 22]
           Expression Statement [line: 25]
-            Operator: - [line: 25]
-              Left:
-                Variable: arr [line: 25]
-                  Index:
-                    Number: 0 [line: 25]
-              Right:
-                Number: 1 [line: 25]
+            Variable: arr [line: 25]
+              Index:
+                Number: 0 [line: 25]
           Empty Statement [line: 25]
           Expression Statement [line: 26]
             Variable: arr [line: 26]

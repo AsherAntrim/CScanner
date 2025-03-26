@@ -8,7 +8,7 @@ public class ExpressionStmtNode extends StatementNode {
 
     public ExpressionStmtNode(int lineNum) {
         super(lineNum);
-        this.expression = null; // For empty statements (semicolon only)
+        this.expression = null;
     }
 
     public ExpressionStmtNode(int lineNum, ExpressionNode expression) {

@@ -13,13 +13,10 @@ public class Main {
         }
 
         try {
-            // Create the parser
             Parser parser = new CMinusParser(args[0]);
 
-            // Parse the input file
             parser.parse();
 
-            // Generate the AST output
             parser.printTree(args[1]);
 
             System.out.println("Parsing completed. AST written to " + args[1]);

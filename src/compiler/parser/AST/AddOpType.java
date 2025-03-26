@@ -1,7 +1,7 @@
 package compiler.parser.AST;
 
 /**
- * Enumeration for additive operators in C-
+ * Enumeration for additive operators
  */
 public enum AddOpType {
     PLUS("+"),
